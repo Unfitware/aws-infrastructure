@@ -79,7 +79,7 @@ jobs:
 
       - name: Run a multi-line script
         run: |
-          aws ls s3
+          aws s3 ls
           
 
   

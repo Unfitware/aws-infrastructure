@@ -76,6 +76,10 @@ jobs:
     #     special-characters-workaround: # optional
     # When enabled, this option will check if there are already valid credentials in the environment. If there are, new credentials will not be fetched. If there are not, the action will run as normal.
     #     use-existing-credentials: # optional
+
+      - name: Run a multi-line script
+        run: |
+          aws ls s3
           
 
   

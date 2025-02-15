@@ -24,6 +24,4 @@ resource "aws_vpc" "primary_vpc" {
     instance_tenancy = "default"
 }
 
-resource "aws_instance" "instance_1" {
 
-}

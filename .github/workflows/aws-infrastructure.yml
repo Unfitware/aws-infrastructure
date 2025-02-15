@@ -39,9 +39,7 @@ jobs:
         run: |
           terraform init
           terraform fmt
-          ls -la /users/tf-user/secrets/
-          cat /users/tf_user/secrets/web-identity-token
-          terraform plan
+          ls -la /
                     
       - name: '"Configure AWS Credentials" Action for GitHub Actions on runner'
         uses: aws-actions/configure-aws-credentials@v4.1.0

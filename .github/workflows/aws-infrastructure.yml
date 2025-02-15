@@ -37,6 +37,7 @@ jobs:
         run: |
           terraform init
           terraform fmt
+          terraform plan
                     
       - name: '"Configure AWS Credentials" Action for GitHub Actions on runner'
         uses: aws-actions/configure-aws-credentials@v4.1.0

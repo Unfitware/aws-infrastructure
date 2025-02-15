@@ -34,10 +34,11 @@ jobs:
           terraform_version: 'latest'
           # Whether or not to install a wrapper to wrap subsequent calls of the `terraform` binary and expose its STDOUT, STDERR, and exit code as outputs named `stdout`, `stderr`, and `exitcode` respectively. Defaults to `true`.
           terraform_wrapper: 'true'
+
+      - name: Terraform version check
+        run: |
+          terraform --version
                     
-
-
-
 
       - name: '"Configure AWS Credentials" Action for GitHub Actions'
         uses: aws-actions/configure-aws-credentials@v4.1.0

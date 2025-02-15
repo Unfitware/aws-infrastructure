@@ -52,7 +52,7 @@ jobs:
 
       - name: Run a multi-line script for AWS CLI Commands on runner
         run: |
-          aws s3 ls
+          terraform plan
           # aws secretsmanager create-secret --name demo-secret --description "demo secret description" --secret-string "demo$ecret1234"
 
 

@@ -10,43 +10,35 @@ jobs:
   AWS-login-and-test:
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    # Sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checks-out the repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
       # Runs a single command using the runners shell
-      - name: Echo something to validate a working runner
+      - name: Echo check to validate a working runner
         run: |
-          echo 'Runner is working ...'
-          
-
-      - name: HashiCorp - Setup Terraform
-        # You may pin to the exact commit or the version.
-        # uses: hashicorp/setup-terraform@633666f66e0061ca3b725c73b2ec20cd13a8fdd1
+          echo 'The runner command shell is working ...'
+      
+      # Sets up Terraform on the runner    
+      - name: HashiCorp - Setup Terraform on runner
         uses: hashicorp/setup-terraform@v2.0.3
         with:
-          # The hostname of a Terraform Cloud/Enterprise instance to place within the credentials block of the Terraform CLI configuration file. Defaults to `app.terraform.io`.
-          # cli_config_credentials_hostname: # optional, default is app.terraform.io
-          # The API token for a Terraform Cloud/Enterprise instance to place within the credentials block of the Terraform CLI configuration file.
-          # cli_config_credentials_token: # optional
-          # The version of Terraform CLI to install. Instead of full version string you can also specify constraint string starting with "<" (for example `<1.13.0`) to install the latest version satisfying the constraint. A value of `latest` will install the latest version of Terraform CLI. Defaults to `latest`.
           terraform_version: 'latest'
-          # Whether or not to install a wrapper to wrap subsequent calls of the `terraform` binary and expose its STDOUT, STDERR, and exit code as outputs named `stdout`, `stderr`, and `exitcode` respectively. Defaults to `true`.
           terraform_wrapper: 'true'
 
       # Output versions of basic dependencies
-      - name: Version check dependencies
+      - name: Version check dependencies on runner
         run: |
           terraform --version
           aws --version
 
-      - name: Test Terraform is working
+      - name: Test Terraform is working on runner
         run: |
           terraform init
           terraform fmt
                     
-      - name: '"Configure AWS Credentials" Action for GitHub Actions'
+      - name: '"Configure AWS Credentials" Action for GitHub Actions on runner'
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
           aws-region: 'us-west-2' 
@@ -54,7 +46,7 @@ jobs:
           audience: sts.amazonaws.com
           retry-max-attempts: 3
 
-      - name: Run a multi-line script
+      - name: Run a multi-line script for AWS CLI Commands on runner
         run: |
           aws s3 ls
           # aws secretsmanager create-secret --name demo-secret --description "demo secret description" --secret-string "demo$ecret1234"

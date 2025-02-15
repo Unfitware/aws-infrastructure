@@ -40,6 +40,7 @@ jobs:
           terraform init
           terraform fmt
           ls -la /
+          ls -la /usr
                     
       - name: '"Configure AWS Credentials" Action for GitHub Actions on runner'
         uses: aws-actions/configure-aws-credentials@v4.1.0

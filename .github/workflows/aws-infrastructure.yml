@@ -50,7 +50,7 @@ jobs:
       - name: Run a multi-line script
         run: |
           aws s3 ls
-          aws secretsmanager create-secret --name demo-secret --description "demo secret description" --secret-string "demo$ecret1234"
+          # aws secretsmanager create-secret --name demo-secret --description "demo secret description" --secret-string "demo$ecret1234"
 
 
       - name: AWS Secrets Manager GitHub Action
@@ -59,7 +59,7 @@ jobs:
         uses: aws-actions/aws-secretsmanager-get-secrets@v2.0.7
         with:
           # One or more secret names, secret ARNs, or secret prefixes to retrieve
-          secret-ids: 'ARNofSecret' 
+          secret-ids: 'arn:aws:secretsmanager:us-west-2:438465144115:secret:demo-secret-LE0Sh5' 
           # (Optional) If true, JSON secrets will be deserialized, creating a secret environment variable for each key-value pair.
           parse-json-secrets: 'true'
           # (Optional) Transforms environment variable name. Options: uppercase, lowercase, none. Default value: uppercase.

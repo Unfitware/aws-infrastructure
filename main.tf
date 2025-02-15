@@ -15,7 +15,7 @@ provider "aws" {
     assume_role_with_web_identity {
         role_arn                  = "arn:aws:iam::438465144115:role/GitHubActions_PowerUser"
         session_name              = "myWebIDSessionName"
-        web_identity_token_file   = "/Users/tf_user/secrets/web-identity-token"
+        web_identity_token_file   = "/usr/tf_user/secrets/web-identity-token"
       }
 }
 

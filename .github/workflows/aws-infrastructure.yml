@@ -36,10 +36,15 @@ jobs:
           terraform_wrapper: 'true'
 
       # Output versions of basic dependencies
-      - name: Version check
+      - name: Version check dependencies
         run: |
           terraform --version
           aws --version
+
+      - name: Test Terraform is working
+        run: |
+          terraform int
+          terraform fmt
                     
       - name: '"Configure AWS Credentials" Action for GitHub Actions'
         uses: aws-actions/configure-aws-credentials@v4.1.0

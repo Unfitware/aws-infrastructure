@@ -43,7 +43,7 @@ jobs:
 
       - name: Test Terraform is working
         run: |
-          terraform int
+          terraform init
           terraform fmt
                     
       - name: '"Configure AWS Credentials" Action for GitHub Actions'

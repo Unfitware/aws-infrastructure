@@ -1,6 +1,6 @@
 name: Run AWS Login with OIDC
 
-# Trigger - 2
+# Trigger - 3
 on: [push] 
 
 

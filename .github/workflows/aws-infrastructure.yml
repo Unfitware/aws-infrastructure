@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
 
       # Runs a single command using the runners shell
-      - name: Echo check to validate a working runner
+      - name: Set the Web ID Token Path
         run: |
           echo 'The runner command shell is working ...'
           echo "AWS_WEB_IDENTITY_TOKEN_FILE=/usr/tf_user/secrets/web-identity-token" >> $GITHUB_ENV
@@ -30,17 +30,10 @@ jobs:
           terraform_version: 'latest'
           terraform_wrapper: 'true'
 
-      # Output versions of basic dependencies
-      - name: Version check dependencies on runner
-        run: |
-          terraform --version
-          aws --version
-
       - name: Test Terraform is working on runner
         run: |
           terraform init
           terraform fmt
-
                     
       - name: '"Configure AWS Credentials" Action for GitHub Actions on runner'
         uses: aws-actions/configure-aws-credentials@v4.1.0
@@ -53,8 +46,9 @@ jobs:
         # Run a multi-line s cript for AWS CLI Commands on runner
       - name: Run the Terraform main.tf  
         run: |
+          terrafoerm init
           terraform plan
-          terraform apply -auto-apply
+          terraform apply -auto-approve
           # aws secretsmanager create-secret --name demo-secret --description "demo secret description" --secret-string "demo$ecret1234"
 
 

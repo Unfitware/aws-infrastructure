@@ -39,6 +39,11 @@ jobs:
           role-to-assume: arn:aws:iam::438465144115:role/GitHubActions_PowerUser
           audience: sts.amazonaws.com
           retry-max-attempts: 3
+
+      - name: Read OIDC Token
+        run: echo $ACTIONS_ID_TOKEN_REQUEST_URL
+      - name: Read OIDC Token
+        run: echo $ACTIONS_ID_TOKEN_REQUEST_TOKEN
    
       # Run the Terraform main.tf  
       - name: Run Terraform      

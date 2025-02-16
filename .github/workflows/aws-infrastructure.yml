@@ -14,11 +14,12 @@ jobs:
 
     # Sequence of tasks that will be executed as part of the job
     steps:
+      - name: Checkout
       # Checks-out the repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
 
       # Runs a single command using the runners shell
-      - name: Set the Web ID Token Path
+      - name: 'Set the Web ID Token Path'
         run: |
           echo 'The runner command shell is working ...'
           echo "AWS_WEB_IDENTITY_TOKEN_FILE=/usr/tf_user/secrets/web-identity-token" >> $GITHUB_ENV
@@ -29,12 +30,8 @@ jobs:
         with:
           terraform_version: 'latest'
           terraform_wrapper: 'true'
-
-      - name: Test Terraform is working on runner
-        run: |
-          terraform init
-          terraform fmt
-                    
+          
+      # Get AWS Role With WebIdentity              
       - name: '"Configure AWS Credentials" Action for GitHub Actions on runner'
         uses: aws-actions/configure-aws-credentials@v4.1.0
         with:
@@ -42,15 +39,14 @@ jobs:
           role-to-assume: arn:aws:iam::438465144115:role/GitHubActions_PowerUser
           audience: sts.amazonaws.com
           retry-max-attempts: 3
-
-        # Run a multi-line s cript for AWS CLI Commands on runner
-        # - name: Run the Terraform main.tf  
-          run: |
-            terraform init
-            terraform plan
-            terraform apply -auto-approve
-            # aws secretsmanager create-secret --name demo-secret --description "demo secret description" --secret-string "demo$ecret1234"
-
+   
+      # Run the Terraform main.tf  
+      - name: Run Terraform      
+        run: |
+          terraform init
+          terraform plan
+          terraform apply -auto-approve
+          # aws secretsmanager create-secret --name demo-secret --description "demo secret description" --secret-string "demo$ecret1234"
 
       - name: AWS Secrets Manager GitHub Action
         # You may pin to the exact commit or the version.

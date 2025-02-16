@@ -43,6 +43,7 @@ jobs:
       # Run the Terraform main.tf  
       - name: Run Terraform      
         run: |
+          ls -la $GITHUB_ENV
           terraform init
           terraform plan
           terraform apply -auto-approve

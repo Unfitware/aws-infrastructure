@@ -44,12 +44,12 @@ jobs:
           retry-max-attempts: 3
 
         # Run a multi-line s cript for AWS CLI Commands on runner
-      - name: Run the Terraform main.tf  
-        run: |
-          terraform init
-          terraform plan
-          terraform apply -auto-approve
-          # aws secretsmanager create-secret --name demo-secret --description "demo secret description" --secret-string "demo$ecret1234"
+        # - name: Run the Terraform main.tf  
+          run: |
+            terraform init
+            terraform plan
+            terraform apply -auto-approve
+            # aws secretsmanager create-secret --name demo-secret --description "demo secret description" --secret-string "demo$ecret1234"
 
 
       - name: AWS Secrets Manager GitHub Action

@@ -21,6 +21,7 @@ jobs:
       - name: Echo check to validate a working runner
         run: |
           echo 'The runner command shell is working ...'
+          echo "AWS_WEB_IDENTITY_TOKEN_FILE=/usr/tf_user/secrets/web-identity-token" >> $GITHUB_ENV
       
       # Sets up Terraform on the runner    
       - name: HashiCorp - Setup Terraform on runner
@@ -52,7 +53,7 @@ jobs:
 
       - name: Run a multi-line script for AWS CLI Commands on runner
         run: |
-          terraform plan
+          terraform plan -auto-approve
           # aws secretsmanager create-secret --name demo-secret --description "demo secret description" --secret-string "demo$ecret1234"
 
 

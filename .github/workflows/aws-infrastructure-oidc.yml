@@ -40,10 +40,10 @@ jobs:
           audience: sts.amazonaws.com
           retry-max-attempts: 3
 
-     # - name: Read OIDC Token
-     #   run: echo $ACTIONS_ID_TOKEN_REQUEST_URL
-     #- name: Read OIDC Token
-     #   run: echo $ACTIONS_ID_TOKEN_REQUEST_TOKEN
+      - name: Read OIDC Token
+        run: echo $ACTIONS_ID_TOKEN_REQUEST_URL
+      - name: Read OIDC Token
+        run: echo $ACTIONS_ID_TOKEN_REQUEST_TOKEN
    
       # Run the Terraform main.tf  
      # - name: Run Terraform      

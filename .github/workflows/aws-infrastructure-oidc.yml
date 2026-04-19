@@ -94,7 +94,7 @@ jobs:
         run: |
           TIMESTAMP=$(date -u +"%Y-%m-%dT%H-%M-%SZ")
           aws s3 cp output/reports/inventory.csv \
-            s3://$platform-metastore/$labels-tags/inventory-${TIMESTAMP}.csv
+            s3://$platform-meta-store/$labels-tags/inventory-${TIMESTAMP}.csv
           
 
       - name: Upload artifact

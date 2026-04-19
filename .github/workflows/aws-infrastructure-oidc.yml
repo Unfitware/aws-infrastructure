@@ -26,13 +26,76 @@ jobs:
           audience: sts.amazonaws.com
           retry-max-attempts: 3
 
+      # Verify ID
+      - name: Verify caller identity
+        run: aws sts get-caller-identity
+
+      # Check Tokens
       - name: Read OIDC Token
         run: echo $ACTIONS_ID_TOKEN_REQUEST_URL
       - name: Read OIDC Token
         run: echo $ACTIONS_ID_TOKEN_REQUEST_TOKEN
 
+      # List buckets
       - name: Run some test aws cli commands
         run: aws s3 ls
+
+      # Install Javascript Query on Runner
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      # Create the folders to store stuff
+
+      - name: Prepare output folders
+        run: |
+          mkdir -p output/tagging
+          mkdir -p output/reports
+
+      # Get the regions with AWS CLI commands    
+      - name: Get all AWS regions
+        run: |
+          aws ec2 describe-regions \
+            --query 'Regions[].RegionName' \
+            --output text | tr '\t' '\n' > output/reports/regions.txt
+
+      # Run AWS CLI to get resources and output results to files
+      - name: Collect inventory with Tagging API
+        shell: bash
+        run: |
+          while read -r region; do
+            echo "Scanning $region"
+            aws resourcegroupstaggingapi get-resources \
+              --region "$region" \
+              --output json > "output/tagging/${region}.json" || \
+            echo '{"ResourceTagMappingList":[]}' > "output/tagging/${region}.json"
+          done < output/reports/regions.txt
+
+
+       # Run AWS CLI to create CSV files 
+      - name: Build CSV report
+        shell: bash
+        run: |
+          echo "region,arn,service,tag_count" > output/reports/inventory.csv
+
+          while read -r region; do
+            jq -r --arg region "$region" '
+              (.ResourceTagMappingList // [])[] |
+              [
+                $region,
+                (.ResourceARN // ""),
+                ((.ResourceARN // "") | split(":")[2] // ""),
+                ((.Tags // []) | length)
+              ] | @csv
+            ' "output/tagging/${region}.json" >> output/reports/inventory.csv
+          done < output/reports/regions.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aws-inventory
+          path: output/reports/
+          retention-days: 14
    
 
            

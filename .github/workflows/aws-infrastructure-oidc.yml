@@ -23,7 +23,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: 'us-west-2' 
-          role-to-assume: arn:aws:iam::438465144115:role/GitHubActions
+          role-to-assume: arn:aws:iam::677252573665:role/GitHubActions
           audience: sts.amazonaws.com
           retry-max-attempts: 3
 

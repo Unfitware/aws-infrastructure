@@ -30,6 +30,9 @@ jobs:
         run: echo $ACTIONS_ID_TOKEN_REQUEST_URL
       - name: Read OIDC Token
         run: echo $ACTIONS_ID_TOKEN_REQUEST_TOKEN
+
+      - name: Run some test aws cli commands
+        run: aws s3 ls
    
 
            

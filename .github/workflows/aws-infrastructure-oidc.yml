@@ -1,6 +1,6 @@
 name: Run AWS Login with OIDC and Deploy
 
-# Trigger - 6
+# Trigger - 7
 on: [push] 
 
 permissions:

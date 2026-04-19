@@ -1,8 +1,7 @@
-name: Run AWS Login with OIDC
+name: Run AWS Login with OIDC and Deploy
 
 # Trigger - 6
 on: [push] 
-
 
 permissions:
   id-token: write

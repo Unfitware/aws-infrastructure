@@ -20,7 +20,7 @@ jobs:
           
       # Get AWS Role With WebIdentity              
       - name: '"Configure AWS Credentials" Action for GitHub Actions on runner'
-        uses: aws-actions/configure-aws-credentials@v4.1.0
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: 'us-west-2' 
           role-to-assume: arn:aws:iam::438465144115:role/GitHubActions

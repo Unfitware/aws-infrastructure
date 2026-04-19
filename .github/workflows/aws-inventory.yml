@@ -1,0 +1,143 @@
+name: AWS Inventory
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: "0 8 * * *"
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  ROLE_TO_ASSUME: arn:aws:iam::123456789012:role/github-actions-inventory-role
+  S3_BUCKET: ""
+  S3_PREFIX: aws-inventory
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials with OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Verify caller identity
+        run: aws sts get-caller-identity
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Create output folders
+        run: |
+          mkdir -p output/resource-explorer
+          mkdir -p output/tagging
+          mkdir -p output/reports
+
+      - name: List AWS regions
+        id: regions
+        run: |
+          aws ec2 describe-regions \
+            --query 'Regions[].RegionName' \
+            --output text | tr '\t' '\n' > output/reports/regions.txt
+          cat output/reports/regions.txt
+
+      - name: Collect Resource Explorer inventory
+        shell: bash
+        run: |
+          while read -r region; do
+            echo "Resource Explorer scan: $region"
+
+            if aws resource-explorer-2 list-views --region "$region" >/dev/null 2>&1; then
+              aws resource-explorer-2 search \
+                --region "$region" \
+                --query-string "*" \
+                --output json > "output/resource-explorer/${region}.json" || \
+              echo '{"Resources":[]}' > "output/resource-explorer/${region}.json"
+            else
+              echo '{"Resources":[]}' > "output/resource-explorer/${region}.json"
+            fi
+          done < output/reports/regions.txt
+
+      - name: Collect Tagging API inventory
+        shell: bash
+        run: |
+          while read -r region; do
+            echo "Tagging API scan: $region"
+            aws resourcegroupstaggingapi get-resources \
+              --region "$region" \
+              --output json > "output/tagging/${region}.json" || \
+            echo '{"ResourceTagMappingList":[]}' > "output/tagging/${region}.json"
+          done < output/reports/regions.txt
+
+      - name: Build CSV summary
+        shell: bash
+        run: |
+          echo "region,source,arn,service,resource_type,tag_count" > output/reports/inventory-summary.csv
+
+          while read -r region; do
+            jq -r --arg region "$region" '
+              (.Resources // [])[] |
+              [
+                $region,
+                "resource-explorer",
+                (.Arn // ""),
+                (.Service // ""),
+                (.ResourceType // ""),
+                ""
+              ] | @csv
+            ' "output/resource-explorer/${region}.json" >> output/reports/inventory-summary.csv
+
+            jq -r --arg region "$region" '
+              (.ResourceTagMappingList // [])[] |
+              [
+                $region,
+                "tagging-api",
+                (.ResourceARN // ""),
+                ((.ResourceARN // "") | split(":")[2] // ""),
+                "",
+                ((.Tags // []) | length)
+              ] | @csv
+            ' "output/tagging/${region}.json" >> output/reports/inventory-summary.csv
+          done < output/reports/regions.txt
+
+      - name: Build high-level counts
+        shell: bash
+        run: |
+          {
+            echo "Inventory run timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+            echo
+            echo "Resource Explorer counts by region:"
+            for f in output/resource-explorer/*.json; do
+              region=$(basename "$f" .json)
+              count=$(jq '(.Resources // []) | length' "$f")
+              echo "$region,$count"
+            done
+            echo
+            echo "Tagging API counts by region:"
+            for f in output/tagging/*.json; do
+              region=$(basename "$f" .json)
+              count=$(jq '(.ResourceTagMappingList // []) | length' "$f")
+              echo "$region,$count"
+            done
+          } > output/reports/inventory-counts.txt
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aws-inventory
+          path: output/
+          retention-days: 14
+
+      - name: Optionally upload to S3
+        if: env.S3_BUCKET != ''
+        run: |
+          RUN_ID="${{ github.run_id }}"
+          aws s3 cp output/ "s3://${S3_BUCKET}/${S3_PREFIX}/${RUN_ID}/" --recursive

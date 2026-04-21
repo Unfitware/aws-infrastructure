@@ -1,2 +1,67 @@
-# Snippet of code that reads accounts takes inventory
+# This is a separate workflow for inventory collection using AWS CLI and OIDC. It collects 
+# inventory data across all regions and uploads a CSV report to S3.  
+# Add these tasks to the main workflow if you want to run them together, or keep them separate for modularity and scheduling.      
 
+      # Install Javascript Query on Runner
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      # Create the folders to store stuff
+
+      - name: Prepare output folders
+        run: |
+          mkdir -p output/tagging
+          mkdir -p output/reports
+
+      # Get the regions with AWS CLI commands    
+      - name: Get all AWS regions
+        run: |
+          aws ec2 describe-regions \
+            --query 'Regions[].RegionName' \
+            --output text | tr '\t' '\n' > output/reports/regions.txt
+
+      # Run AWS CLI to get resources and output results to files
+      - name: Collect inventory with Tagging API
+        shell: bash
+        run: |
+          while read -r region; do
+            echo "Scanning $region"
+            aws resourcegroupstaggingapi get-resources \
+              --region "$region" \
+              --output json > "output/tagging/${region}.json" || \
+            echo '{"ResourceTagMappingList":[]}' > "output/tagging/${region}.json"
+          done < output/reports/regions.txt
+
+
+       # Run AWS CLI to create CSV files 
+      - name: Build CSV report
+        shell: bash
+        run: |
+          echo "region,arn,service,tag_count" > output/reports/inventory.csv
+
+          while read -r region; do
+            jq -r --arg region "$region" '
+              (.ResourceTagMappingList // [])[] |
+              [
+                $region,
+                (.ResourceARN // ""),
+                ((.ResourceARN // "") | split(":")[2] // ""),
+                ((.Tags // []) | length)
+              ] | @csv
+            ' "output/tagging/${region}.json" >> output/reports/inventory.csv
+          done < output/reports/regions.txt
+
+      - name: Upload to S3
+        run: |
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H-%M-%SZ")
+          aws s3 cp output/reports/inventory.csv \
+            s3://platform-meta-store/labels-tags/inventory-${TIMESTAMP}.csv
+          
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aws-inventory
+          path: output/reports/
+          retention-days: 14

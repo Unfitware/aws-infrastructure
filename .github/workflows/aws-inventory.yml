@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: us-east-1
-  ROLE_TO_ASSUME: arn:aws:iam::123456789012:role/github-actions-inventory-role
+  AWS_REGION: ${AWS_REGION}
+  ROLE_TO_ASSUME: ${ROLE_TO_ASSUME}
   S3_BUCKET: ""
   S3_PREFIX: aws-inventory
 

@@ -3,7 +3,6 @@ name: Run AWS Login with OIDC and Deploy
 on: 
   workflow_dispatch: 
 
-
 permissions:
   id-token: write
   contents: read
@@ -47,11 +46,13 @@ jobs:
         with:
           terraform_version: 1.12.0 
       - name: Terraform Initialize
-        run: terraform init
+        run: terraform --version
+        
       - name: Terraform Plan
         run: terraform plan
-      - name: Terraform Apply
-        run: terraform apply -auto-approve  
+        
+      # - name: Terraform Apply
+      #   run: terraform apply -auto-approve  
 
 
 

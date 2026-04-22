@@ -6,4 +6,9 @@ terraform {
             version = "~> 5.50"
         }
     }
+backend "s3" {
+    bucket = "j64364-tfstate"
+    key    = "dev-tfstate"
+    region = "us-west-1"
+    }
 }

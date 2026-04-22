@@ -3,6 +3,10 @@ name: Run AWS Login with OIDC and Deploy
 on: 
   workflow_dispatch: 
 
+env:
+  AWS_REGION: us-west-2
+  TF_WORKING_DIR: .
+
 permissions:
   id-token: write
   contents: read
@@ -40,19 +44,98 @@ jobs:
       - name: Run some test aws cli commands
         run: aws s3 ls
 
-      # Being Terraform CLI setup and deployment
+      #
+      # BEGIN TERRAFORM SECTION
+      #  
+
+
+# jobs:
+  # terraform-checks:
+  #   name: fmt / init / validate / plan
+  #   # runs-on: ubuntu-latest
+
+
+      # Being Terraform CLI setup and validation
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.12.0 
+
+      - name: Terraform format
+        run: terraform fmt -check -recursive
+
       - name: Terraform Initialize
-        run: terraform --version
+        run: terraform -input=false 
+
+
+      - name: Terraform validate
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform validate
+
+      # Begin plan and upload before apply
         
-      - name: Terraform Plan
-        run: terraform plan
-        
-      # - name: Terraform Apply
-      #   run: terraform apply -auto-approve  
+      - name: Terraform plan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform plan -input=false -no-color -out=tfplan
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: ${{ env.TF_WORKING_DIR }}/tfplan
+
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan
+          path: ${{ env.TF_WORKING_DIR }}
+
+      - name: Terraform apply saved plan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -input=false -auto-approve tfplan
+
+          
+
+  # terraform-apply:
+  #   name: Now apply Terraform with OIDC
+  #   if: github.event_name == 'workflow_dispatch'
+  #   # needs: terraform-checks
+  #   runs-on: ubuntu-latest
+
+
+    # steps:
+    #   - name: Checkout
+    #     uses: actions/checkout@v6
+
+    #   # Get AWS Role With WebIdentity              
+    #   - name: '"Configure AWS Credentials" Action for GitHub Actions on runner'
+    #     uses: aws-actions/configure-aws-credentials@v6
+    #     with:
+    #       aws-region: 'us-west-2' 
+    #       role-to-assume: arn:aws:iam::677252573665:role/GitHubActions
+    #       audience: sts.amazonaws.com
+    #       retry-max-attempts: 3
+
+    #   - name: Setup Terraform
+    #     uses: hashicorp/setup-terraform@v4
+    #     with:
+    #       terraform_version: 1.12.0       
+
+    #   - name: Terraform init
+    #     working-directory: ${{ env.TF_WORKING_DIR }}
+    #     run: terraform init -input=false
+
+
+
+
+
+      # - name: Terraform apply
+      #   working-directory: ${{ env.TF_WORKING_DIR }}
+      #   run: terraform apply -input=false -auto-approve
+
+      #
+      # END TERRAFORM SECTION
+      #
 
 
 

@@ -1,7 +1,8 @@
 name: Run AWS Login with OIDC and Deploy
 
-# Trigger - 7
-on: [push] 
+on: 
+  workflow_dispatch: 
+
 
 permissions:
   id-token: write
@@ -51,7 +52,7 @@ jobs:
         run: terraform plan
       - name: Terraform Apply
         run: terraform apply -auto-approve  
-        
+
 
 
 

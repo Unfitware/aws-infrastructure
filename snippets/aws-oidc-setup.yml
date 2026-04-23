@@ -1,0 +1,49 @@
+name: Run AWS Login with OIDC
+
+on: 
+  workflow_dispatch: 
+
+# Sets various environment variables that to be used in the workflow. With values stored in GitHub Secrets for security.
+env:
+  AWS_REGION: us-west-2
+  TF_WORKING_DIR: .
+
+# Permissions for OIDC token access and repository content read access. Adjust as needed for your workflow.
+permissions:
+  id-token: write
+  contents: read
+
+
+# Define the jobs that will run as part of this workflow. Each job can have its own set of steps and runs on a specified environment.  
+jobs:
+  AWS-login-and-test:
+    runs-on: ubuntu-latest
+
+    # Sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Checkout
+      # Checks-out the repository under $GITHUB_WORKSPACE, so your job can access it
+        uses: actions/checkout@v4
+          
+      # Get AWS Role With WebIdentity              
+      - name: '"Configure AWS Credentials" Action for GitHub Actions on runner'
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-region: 'us-west-2' 
+          role-to-assume: arn:aws:iam::677252573665:role/GitHubActions
+          audience: sts.amazonaws.com
+          retry-max-attempts: 3
+
+      # Verify ID
+      - name: Verify caller identity
+        run: aws sts get-caller-identity
+
+      # Check Tokens
+      - name: Read OIDC Token
+        run: echo $ACTIONS_ID_TOKEN_REQUEST_URL
+      - name: Read OIDC Token
+        run: echo $ACTIONS_ID_TOKEN_REQUEST_TOKEN
+
+      # List buckets
+      - name: Run some test aws cli commands
+        run: aws s3 ls

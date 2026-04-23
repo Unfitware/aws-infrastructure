@@ -1,41 +1,26 @@
 variable "project_name" {
   description = "Prefix for named resources"
   type        = string
-  default     = "shopify-mcp"
+  default     = "nbncorp"
 }
 
 variable "aws_region" {
   description = "AWS region"
-  type        = string
-  default     = "us-west-1"
+  type        = "string"
+  default     = "us-west-2"
 }
 
-variable "shopify_myshopify_domain" {
-  description = "Your store's myshopify domain (NOT custom domain), e.g., unfitware.myshopify.com"
+
+
+variable "unfitware_domain" {
+  description = "Unfitware DNS domain"
   type        = string
-  default     = "unfitware.myshopify.com"
+  default     = "unfitware.com"
 }
 
-variable "shopify_api_version" {
-  description = "Shopify Admin API version"
-  type        = string
-  default     = "2025-07"
-}
 
-variable "secret_name" {
-  description = "Secrets Manager secret name (container only; add value in console after apply)"
+variable "aws_account_id" {
+  description = "AWS Account ID"
   type        = string
-  default     = "shopify/admin"
-}
-
-variable "mcp_bearer" {
-  description = "Random string used to protect your MCP endpoint (Authorization: Bearer ...)"
-  type        = string
-  sensitive   = true
-}
-
-variable "log_retention_days" {
-  description = "CloudWatch Logs retention"
-  type        = number
-  default     = 14
+  default     = "123456789123"
 }

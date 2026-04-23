@@ -64,31 +64,31 @@ jobs:
       - name: Terraform format
         run: terraform fmt -check -recursive
 
-      - name: Terraform Initialize
-        run: terraform -input=false 
+      # - name: Terraform Initialize
+      #   run: terraform -input=false 
 
 
-      - name: Terraform validate
-        working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform validate
+      # - name: Terraform validate
+      #   working-directory: ${{ env.TF_WORKING_DIR }}
+      #   run: terraform validate
 
       # Begin plan and upload before apply
         
-      - name: Terraform plan
-        working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform plan -input=false -no-color -out=tfplan
+      # - name: Terraform plan
+      #   working-directory: ${{ env.TF_WORKING_DIR }}
+      #   run: terraform plan -input=false -no-color -out=tfplan
 
-      - name: Upload plan artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-plan
-          path: ${{ env.TF_WORKING_DIR }}/tfplan
+      # - name: Upload plan artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: terraform-plan
+      #     path: ${{ env.TF_WORKING_DIR }}/tfplan
 
-      - name: Download plan artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-plan
-          path: ${{ env.TF_WORKING_DIR }}
+      # - name: Download plan artifact
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: terraform-plan
+      #     path: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform apply saved plan
         working-directory: ${{ env.TF_WORKING_DIR }}

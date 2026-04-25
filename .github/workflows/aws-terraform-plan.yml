@@ -28,8 +28,8 @@ jobs:
       - name: '"Configure AWS Credentials" Action for GitHub Actions on runner'
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          aws-region: 'us-west-2' 
-          role-to-assume: ${ROLE_TO_ASSUME} # AWS Role for GitHub Actions to assume
+          aws-region: ${{env.AWS_REGION}}
+          role-to-assume: arn:aws:iam::${secrets.AWS_ACCOUNT_ID}:role/${secrets.ACTIONS_ROLE}
           audience: sts.amazonaws.com
           retry-max-attempts: 3
 
@@ -53,9 +53,9 @@ jobs:
 
 
 # jobs:
-  # terraform-checks:
-  #   name: fmt / init / validate / plan
-  #   # runs-on: ubuntu-latest
+# terraform-checks:
+#   name: Run Terraform checks with OIDC
+#   # runs-on: ubuntu-latest
 
 
       # Being Terraform CLI setup and validation

@@ -12,8 +12,8 @@ permissions:
   id-token: write
   contents: read
 
-# env:
-#   AWS_REGION: ${env.AWS_REGION}
+env:
+  AWS_REGION: us-west-2
 
 jobs:
   Bootstrap-AWS-for-GitHub-Actions:

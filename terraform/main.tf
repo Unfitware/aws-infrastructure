@@ -1,22 +1,3 @@
-terraform {
-  required_version = "~> 1.12"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.50"
-    }
-  }
-  backend "s3" {
-    bucket  = "j64364-tfstate"
-    key     = "dev-tfstate"
-    region  = "us-west-2"
-    encrypt = "true"
-  }
-}
-
-#
-# Resources for testing and learning Terraform behaviors. 
-# 
 
 resource "aws_s3_bucket" "state_bucket" {
   bucket = "${var.project_name}-core"
@@ -71,5 +52,7 @@ resource "aws_s3_bucket_logging" "state_bucket_logging" {
 resource "aws_s3_bucket" "logs_bucket" {
   bucket = "${var.project_name}-core-logs"
 }
+
+
 
 

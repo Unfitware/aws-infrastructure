@@ -10,14 +10,11 @@ variable "aws_region" {
   default     = "us-west-2"
 }
 
-
-
 variable "unfitware_domain" {
   description = "Unfitware DNS domain"
   type        = string
   default     = "unfitware.com"
 }
-
 
 variable "aws_account_id" {
   description = "AWS Account ID"

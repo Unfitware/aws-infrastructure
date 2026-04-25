@@ -3,7 +3,9 @@ name: Run AWS Login with OIDC and Deploy
 on: 
   workflow_dispatch: 
 
+# Define workflow-level environment variables that can be used across all jobs and steps    
 env:
+  TF_VERSION: 1.12.0
   AWS_REGION: us-west-2
   TF_WORKING_DIR: .
 
@@ -11,13 +13,14 @@ permissions:
   id-token: write
   contents: read
   
+# Define the jobs that will be executed as part of the workflow  
 jobs:
   AWS-login-and-test:
     runs-on: ubuntu-latest
 
     # Sequence of tasks that will be executed as part of the job
     steps:
-      - name: Checkout
+      - name: "Checkout"
       # Checks-out the repository under $GITHUB_WORKSPACE, so your job can access it
         uses: actions/checkout@v4
           
@@ -26,7 +29,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: 'us-west-2' 
-          role-to-assume: arn:aws:iam::677252573665:role/GitHubActions
+          role-to-assume: ${ROLE_TO_ASSUME} # AWS Role for GitHub Actions to assume
           audience: sts.amazonaws.com
           retry-max-attempts: 3
 
@@ -41,12 +44,12 @@ jobs:
         run: echo $ACTIONS_ID_TOKEN_REQUEST_TOKEN
 
       # List buckets
-      - name: Run some test aws cli commands
+      - name: Run test aws cli commands
         run: aws s3 ls
 
-      #
-      # BEGIN TERRAFORM SECTION
-      #  
+#
+# BEGIN TERRAFORM SECTION
+#  
 
 
 # jobs:
@@ -57,9 +60,10 @@ jobs:
 
       # Being Terraform CLI setup and validation
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.12.0 
+          terraform_version: ${{ env.TF_VERSION }}
+
 
       - name: Terraform format
         run: terraform fmt -check -recursive

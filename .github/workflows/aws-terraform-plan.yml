@@ -94,9 +94,9 @@ jobs:
       #     name: terraform-plan
       #     path: ${{ env.TF_WORKING_DIR }}
 
-      - name: Terraform apply saved plan
-        working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform apply -input=false -auto-approve tfplan
+      # - name: Terraform apply saved plan
+      #   working-directory: ${{ env.TF_WORKING_DIR }}
+      #   run: terraform apply -input=false -auto-approve tfplan
 
           
 

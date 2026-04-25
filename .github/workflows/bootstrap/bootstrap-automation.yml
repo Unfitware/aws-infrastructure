@@ -1,0 +1,79 @@
+#
+# Workflow to bootstrap AWS for GitHub Actions Terraform automation using OIDC. 
+# This pipeline setups all the necessary AWS resources and permissions to allow GitHub Actions to interact with AWS securely using OIDC, without the need for long-lived credentials.
+#
+
+name: Bootstrap AWS for GitHub Actions and Terraform
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ${AWS_REGION}
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4  
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.3.1
+        with:
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          aws-region: ${{env.AWS_REGION}}
+
+
+      - name: Run AWS CLI Commands to bootstrap for GitHub Actions Terraform automation
+        run: |
+# Create identity provider for GitHub Actions OIDC
+          aws iam create-open-id-connect-provider \
+            --url https://token.actions.githubusercontent.com \
+            --client-id-list sts.amazonaws.com \
+            --thumbprint-list 6938fd4d98bab03faadb97b34384c4a2dee885    
+
+# Create IAM Role for GitHub Actions with OIDC trust policy
+          aws iam create-role --role-name GitHubActions-Boot --assume-role-policy-document '{
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Principal": {
+                  "Federated": "arn:aws:iam::677252573665:oidc-provider/token.actions.githubusercontent.com"
+                },
+                "Action": "sts:AssumeRoleWithWebIdentity",
+                "Condition": {
+                  "StringEquals": {
+                    "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+                    "token.actions.githubusercontent.com:sub": "repo:unfitware/aws-infrastructure:*"
+                  }
+                }
+              }
+            ]
+          }'
+
+          # Attach policies to the role (e.g., AdministratorAccess for testing - use least privilege in production)
+          aws iam attach-role-policy --role-name GitHubActions --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

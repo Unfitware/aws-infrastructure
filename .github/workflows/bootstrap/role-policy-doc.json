@@ -1,0 +1,79 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "resource-explorer:*",
+                "tag:GetResources",
+                "resource-explorer:ListTags",
+                "resource-explorer-2:GetServiceIndex",
+                "resource-explorer-2:GetAccountLevelServiceConfiguration",
+                "ec2:DescribeRegions",
+                "resource-explorer-2:GetIndex",
+                "resource-explorer-2:DisassociateDefaultView",
+                "resource-explorer-2:DeleteStreamingAccessForService",
+                "resource-explorer-2:CreateManagedView",
+                "resource-explorer-2:ListViews",
+                "resource-explorer-2:CreateIndex",
+                "resource-explorer-2:CreateResourceExplorerSetup",
+                "resource-explorer-2:CreateView",
+                "resource-explorer-2:CreateStreamingAccessForService",
+                "resource-explorer-2:ListServiceIndexes",
+                "resource-explorer:ListResources",
+                "resource-explorer-2:ListManagedViews",
+                "resource-explorer-2:DeleteResourceExplorerSetup",
+                "resource-explorer-2:GetServiceView",
+                "resource-explorer-2:ListIndexesForMembers",
+                "resource-explorer-2:ListStreamingAccessForServices",
+                "resource-explorer-2:ListSupportedResourceTypes",
+                "resource-explorer-2:GetResourceExplorerSetup",
+                "resource-explorer-2:AssociateDefaultView",
+                "resource-explorer:ListResourceTypes",
+                "s3:PutObject",
+                "resource-explorer-2:BatchGetView",
+                "s3:ListAllMyBuckets",
+                "resource-explorer-2:ListIndexes",
+                "resource-explorer-2:GetDefaultView",
+                "sts:GetCallerIdentity",
+                "resource-explorer-2:ListServiceViews"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:GetItem",
+                "s3:ListBucket",
+                "s3:GetBucketVersioning"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:*:123456789111:table/*", # Replace with your actual DynamoDB table ARN
+                "arn:aws:s3:::bucket-name" # Replace with your actual bucket ARN
+            ]
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject"
+            ],
+            "Resource": "arn:aws:s3:::bucket-name/s3-object-key"
+        },
+        {
+            "Sid": "VisualEditor3",
+            "Effect": "Allow",
+            "Action": "resource-explorer-2:*",
+            "Resource": [
+                "arn:aws:resource-explorer-2:*:123456789111:view/*/*", # Replace with your actual view ARN
+                "arn:aws:resource-explorer-2:*:123456789111:managed-view/*/*",  # Replace with your actual managed view ARN
+                "arn:aws:resource-explorer-2:*:123456789111:index/*" # Replace with your actual index ARN
+            ]
+        }
+    ]
+}

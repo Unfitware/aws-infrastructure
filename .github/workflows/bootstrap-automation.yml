@@ -36,8 +36,7 @@ jobs:
           # Create identity provider for GitHub Actions OIDC
           aws iam create-open-id-connect-provider \
             --url https://token.actions.githubusercontent.com \
-            --client-id-list sts.amazonaws.com \
-            --thumbprint-list 6938fd4d98bab03faadb97b34384c4a2dee885    
+            --client-id-list sts.amazonaws.com  
 
           # Create IAM Role for GitHub Actions with OIDC trust policy
           aws iam create-role --role-name GitHubActions-Boot --assume-role-policy-document '{

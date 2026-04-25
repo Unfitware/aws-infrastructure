@@ -1,17 +1,17 @@
 terraform {
-    required_version = "~> 1.12"
-    required_providers {
-        aws = {
-            source = "hashicorp/aws"
-            version = "~> 5.50"
-        }
+  required_version = "~> 1.12"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.50"
     }
-    backend "s3" {
-        bucket = "j64364-tfstate"
-        key    = "dev-tfstate"
-        region = "us-west-2"
-        encrypt = "true"
-    }
+  }
+  backend "s3" {
+    bucket  = "j64364-tfstate"
+    key     = "dev-tfstate"
+    region  = "us-west-2"
+    encrypt = "true"
+  }
 }
 
 #
@@ -44,7 +44,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "state_bucket_encr
 }
 
 resource "aws_s3_bucket_public_access_block" "state_bucket_public_access_block" {
-  bucket = "${var.project_name}-core"
+  bucket                  = "${var.project_name}-core"
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -63,7 +63,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "state_bucket_lifecycle" {
 }
 
 resource "aws_s3_bucket_logging" "state_bucket_logging" {
-  bucket = "${var.project_name}-core"
+  bucket        = "${var.project_name}-core"
   target_bucket = "${var.project_name}-logs"
   target_prefix = "log/"
 }

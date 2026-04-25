@@ -1,0 +1,1 @@
+Generate a bootstrap script that sets up the the backend for Terraform.

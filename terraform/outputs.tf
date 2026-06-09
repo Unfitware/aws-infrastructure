@@ -22,7 +22,7 @@ output "state_bucket_versioning_status" {
 
 output "state_bucket_encryption_algorithm" {
   description = "Server-side encryption algorithm used for the S3 bucket storing Terraform state"
-  value       = aws_s3_bucket_server_side_encryption_configuration.state_bucket_encryption.rule[0].apply_server_side_encryption_by_default[0].sse_algorithm
+  value       = one(aws_s3_bucket_server_side_encryption_configuration.state_bucket_encryption.rule).apply_server_side_encryption_by_default[0].sse_algorithm
 }
 
 output "state_bucket_public_access_block" {

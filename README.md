@@ -3,7 +3,7 @@
 Infrastructure-as-code for AWS, built around a **keyless CI pattern**: GitHub
 Actions authenticates to AWS via OIDC (no long-lived access keys) and runs
 Terraform. The repo also holds the one-time bootstrap that makes that trust
-possible, and a standalone Shopify MCP Lambda.
+possible.
 
 ## What's here
 
@@ -14,7 +14,6 @@ possible, and a standalone Shopify MCP Lambda.
 | `terraform/bootstrap/boostrap.sh` | Separate one-time bootstrap of a KMS-encrypted state bucket via AWS CLI. (Filename misspelling is intentional.) |
 | `.github/workflows/` | The CI workflows — the heart of the repo. |
 | `.github/workflows/bootstrap/terraform-admin-policy.json` | Least-privilege IAM policy attached to the `GitHubActions` role. |
-| `lambda_src/index.js` | Shopify Admin API → MCP JSON-RPC bridge Lambda. Not wired into this repo's Terraform. |
 | `snippets/` | Reference snippets (OIDC CloudFormation setup, tagging pipeline). Not part of any deploy. |
 
 ## Conventions
@@ -96,10 +95,3 @@ terraform fmt -check -recursive
 terraform init -input=false      # backend config is hardcoded in backend.tf
 terraform plan -input=false
 ```
-
-## Shopify MCP Lambda
-
-`lambda_src/index.js` is a standalone Node.js Lambda (API Gateway v2 → handler →
-Shopify Admin GraphQL) that exposes the Shopify Admin API as MCP JSON-RPC. It is
-**not** provisioned by this repo's Terraform. See the file and `CLAUDE.md` for
-its env vars and auth model.

@@ -1,11 +1,14 @@
 name: Run AWS Login with OIDC and Deploy
 
-on: 
-  workflow_dispatch: 
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Apply after plan (waits for approval in the production environment)"
+        type: boolean
+        default: false
 
-# Define workflow-level environment variables that can be used across all jobs and steps    
 env:
-#  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true
   TF_VERSION: 1.12.0
   AWS_REGION: us-west-2
   TF_WORKING_DIR: ./terraform
@@ -13,47 +16,26 @@ env:
 permissions:
   id-token: write
   contents: read
-  
-# Define the jobs that will be executed as part of the workflow  
-jobs:
-  AWS-login-and-test:
-    runs-on: ubuntu-latest
 
-    # Sequence of tasks that will be executed as part of the job
+jobs:
+  plan:
+    name: Terraform plan
+    runs-on: ubuntu-latest
     steps:
-      - name: "Checkout"
-      # Checks-out the repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
         uses: actions/checkout@v4
-          
-      # Get AWS Role With WebIdentity              
-      - name: '"Configure AWS Credentials" Action for GitHub Actions on runner'
+
+      - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v6
         with:
-          aws-region: ${{env.AWS_REGION}}
+          aws-region: ${{ env.AWS_REGION }}
           role-to-assume: arn:aws:iam::677252573665:role/GitHubActions
           audience: sts.amazonaws.com
           retry-max-attempts: 3
 
-      # Verify ID
       - name: Verify caller identity
         run: aws sts get-caller-identity
 
-      # List buckets
-      - name: Run test aws cli commands
-        run: aws s3 ls
-
-#
-# BEGIN TERRAFORM SECTION
-#  
-
-
-# jobs:
-# terraform-checks:
-#   name: Run Terraform checks with OIDC
-#   # runs-on: ubuntu-latest
-
-
-# Being Terraform CLI setup and validation
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
@@ -66,75 +48,56 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform init -input=false
 
-# Begin plan and upload before apply
-        
       - name: Terraform plan
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform plan -input=false -no-color -out=tfplan
 
-      # - name: Upload plan artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: terraform-plan
-      #     path: ${{ env.TF_WORKING_DIR }}/tfplan
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: ${{ env.TF_WORKING_DIR }}/tfplan
+          retention-days: 5
 
-      # - name: Download plan artifact
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: terraform-plan
-      #     path: ${{ env.TF_WORKING_DIR }}
+  apply:
+    name: Terraform apply
+    needs: plan
+    # Gate 1: only run when the dispatcher opts in.
+    if: ${{ inputs.apply }}
+    runs-on: ubuntu-latest
+    # Gate 2: the production environment requires a reviewer to approve before
+    # this job starts.
+    environment: production
+    # Never let two applies run against the state at once.
+    concurrency: terraform-apply
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # - name: Terraform apply saved plan
-      #   working-directory: ${{ env.TF_WORKING_DIR }}
-      #   run: terraform apply -input=false -auto-approve tfplan
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::677252573665:role/GitHubActions
+          audience: sts.amazonaws.com
+          retry-max-attempts: 3
 
-          
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
 
-  # terraform-apply:
-  #   name: Now apply Terraform with OIDC
-  #   if: github.event_name == 'workflow_dispatch'
-  #   # needs: terraform-checks
-  #   runs-on: ubuntu-latest
+      - name: Terraform init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform init -input=false
 
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: ${{ env.TF_WORKING_DIR }}
 
-    # steps:
-    #   - name: Checkout
-    #     uses: actions/checkout@v6
-
-    #   # Get AWS Role With WebIdentity              
-    #   - name: '"Configure AWS Credentials" Action for GitHub Actions on runner'
-    #     uses: aws-actions/configure-aws-credentials@v6
-    #     with:
-    #       aws-region: 'us-west-2' 
-    #       role-to-assume: arn:aws:iam::677252573665:role/GitHubActions
-    #       audience: sts.amazonaws.com
-    #       retry-max-attempts: 3
-
-    #   - name: Setup Terraform
-    #     uses: hashicorp/setup-terraform@v4
-    #     with:
-    #       terraform_version: 1.12.0       
-
- 
-
-
-
-
-
-      # - name: Terraform apply
-      #   working-directory: ${{ env.TF_WORKING_DIR }}
-      #   run: terraform apply -input=false -auto-approve
-
-      #
-      # END TERRAFORM SECTION
-      #
-
-
-
-
-   
-
-           
-          
-
-  
+      # Applies the exact plan produced above; fails if state has drifted since.
+      - name: Terraform apply
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -input=false -auto-approve tfplan

@@ -38,12 +38,6 @@ jobs:
       - name: Verify caller identity
         run: aws sts get-caller-identity
 
-      # Check Tokens
-      - name: Read OIDC Token
-        run: echo $ACTIONS_ID_TOKEN_REQUEST_URL
-      - name: Read OIDC Token
-        run: echo $ACTIONS_ID_TOKEN_REQUEST_TOKEN
-
       # List buckets
       - name: Run test aws cli commands
         run: aws s3 ls

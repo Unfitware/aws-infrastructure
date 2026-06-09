@@ -1,0 +1,94 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InfraServicesManaged",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:*",
+        "s3:*",
+        "lambda:*",
+        "apigateway:*",
+        "cloudfront:*",
+        "dynamodb:*",
+        "kms:*",
+        "logs:*",
+        "cloudformation:*",
+        "ecs:*",
+        "elasticloadbalancing:*",
+        "secretsmanager:*",
+        "resource-explorer-2:*",
+        "tag:GetResources",
+        "tag:TagResources",
+        "tag:UntagResources"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "IamForTerraformManagedRoles",
+      "Effect": "Allow",
+      "Action": [
+        "iam:GetRole",
+        "iam:GetRolePolicy",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListInstanceProfilesForRole",
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:TagRole",
+        "iam:UntagRole",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:CreatePolicy",
+        "iam:DeletePolicy",
+        "iam:CreatePolicyVersion",
+        "iam:DeletePolicyVersion",
+        "iam:GetPolicy",
+        "iam:GetPolicyVersion",
+        "iam:ListPolicyVersions",
+        "iam:PassRole",
+        "iam:GetOpenIDConnectProvider",
+        "iam:ListOpenIDConnectProviders"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyIdentityCreationAndKeys",
+      "Effect": "Deny",
+      "Action": [
+        "iam:CreateUser",
+        "iam:CreateAccessKey",
+        "iam:CreateLoginProfile",
+        "iam:UpdateLoginProfile",
+        "iam:CreateSAMLProvider",
+        "iam:DeleteSAMLProvider"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyTamperingWithOwnTrustAndOidc",
+      "Effect": "Deny",
+      "Action": [
+        "iam:UpdateAssumeRolePolicy",
+        "iam:DeleteRole",
+        "iam:DetachRolePolicy",
+        "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
+        "iam:AttachRolePolicy"
+      ],
+      "Resource": "arn:aws:iam::677252573665:role/GitHubActions"
+    },
+    {
+      "Sid": "DenyOidcProviderTampering",
+      "Effect": "Deny",
+      "Action": [
+        "iam:DeleteOpenIDConnectProvider",
+        "iam:UpdateOpenIDConnectProviderThumbprint",
+        "iam:RemoveClientIDFromOpenIDConnectProvider"
+      ],
+      "Resource": "arn:aws:iam::677252573665:oidc-provider/token.actions.githubusercontent.com"
+    }
+  ]
+}

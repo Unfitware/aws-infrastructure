@@ -1,6 +1,11 @@
 #
-# Workflow to bootstrap AWS for GitHub Actions Terraform automation using OIDC. 
+# Workflow to bootstrap AWS for GitHub Actions Terraform automation using OIDC.
 # This pipeline setups all the necessary AWS resources and permissions to allow GitHub Actions to interact with AWS securely using OIDC, without the need for long-lived credentials.
+#
+# NOTE: This workflow requires long-lived AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY
+# secrets (an IAM user). If you bootstrap from an IAM Identity Center (SSO) admin
+# instead, run terraform/bootstrap/bootstrap-oidc.sh locally under that SSO profile
+# — Identity Center issues only temporary credentials that can't live in GH secrets.
 #
 
 name: Bootstrap AWS for GitHub Actions and Terraform

@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: ${AWS_REGION}
-  ROLE_TO_ASSUME: ${ROLE_TO_ASSUME}
+  AWS_REGION: us-west-2
+  ROLE_TO_ASSUME: arn:aws:iam::677252573665:role/GitHubActions
 
 jobs:
   inventory:
@@ -21,23 +21,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # - name: Configure AWS credentials with OIDC
-      #   uses: aws-actions/configure-aws-credentials@v4
-      #   with:
-      #     access-key-id: ${secrets.AWS_ACCESS_KEY_ID}
-      #     secret-access-key: ${secrets.AWS_SECRET_ACCESS_KEY}
-      #     aws-region: ${{env.AWS_REGION}}
-
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4.3.1
         with:
-          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
-          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-          aws-region: ${{env.AWS_REGION}}
-          role-to-assume: ${{env.ROLE_TO_ASSUME}}
-          # role-external-id: ${{ secrets.AWS_ROLE_EXTERNAL_ID }}
-          # role-duration-seconds: 1200
-          # role-session-name: MySessionName
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          audience: sts.amazonaws.com
 
 
 

@@ -7,11 +7,10 @@ possible.
 
 ## Quick Start
 
-For detailed setup instructions, see [docs/SETUP.md](docs/SETUP.md). It covers:
-- Setting up GitHub variables and environments
-- Running the AWS OIDC bootstrap
-- Verifying the setup
-- Troubleshooting common issues
+Choose your guide based on your needs:
+
+- **[docs/QUICKSTART.md](docs/QUICKSTART.md)** — Fast 6-step setup guide with simple instructions. Start here if you want to get running quickly.
+- **[docs/SETUP.md](docs/SETUP.md)** — Detailed guide with both GitHub UI and CLI methods. Use this for comprehensive information and troubleshooting.
 
 ## What's here
 

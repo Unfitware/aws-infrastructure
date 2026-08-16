@@ -29,7 +29,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: arn:aws:iam::123456789012:role/GitHubActions
+          role-to-assume: arn:aws:iam::677252573665:role/GitHubActions-Boot
           audience: sts.amazonaws.com
           retry-max-attempts: 3
 

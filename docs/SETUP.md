@@ -314,6 +314,27 @@ git push origin main
 
 ## Troubleshooting
 
+### Problem: "Invalid start url provided" error during AWS SSO login
+
+**Cause:** The `sso_start_url` in your AWS config file is incorrect or does not exist.
+
+**Solution:** 
+1. Open your AWS SSO portal in a web browser
+2. Copy the URL from your browser (example: `https://your-org.awsapps.com/start`)
+3. Open your AWS config file:
+   ```bash
+   cat ~/.aws/config
+   ```
+4. Find your profile section and check the `sso_start_url` line
+5. Update it to match your actual SSO portal URL
+6. Save the file
+7. Try logging in again:
+   ```bash
+   aws sso login --profile your-profile-name
+   ```
+
+If you do not know your SSO start URL, ask your AWS administrator.
+
 ### Problem: "Role not found" error in GitHub Actions
 
 **Cause:** The AWS OIDC role was not created.

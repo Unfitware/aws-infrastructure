@@ -205,6 +205,24 @@ git push origin main
 AWS_PROFILE=your-profile-name ./terraform/bootstrap/bootstrap-oidc.sh
 ```
 
+### Error: "Invalid start url provided"
+
+**Cause:** The `sso_start_url` in your AWS config is incorrect.
+
+**Solution:** 
+1. Go to your AWS SSO portal in your browser
+2. Copy the URL (example: `https://your-org.awsapps.com/start`)
+3. Open your AWS config file:
+   ```bash
+   cat ~/.aws/config
+   ```
+4. Find your profile and check the `sso_start_url` line
+5. Make sure it exactly matches your SSO portal URL
+6. Save the file and try logging in again:
+   ```bash
+   aws sso login --profile your-profile-name
+   ```
+
 ### Error: "Invalid S3 bucket name"
 
 **Cause:** The bucket name does not follow AWS rules.

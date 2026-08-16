@@ -11,7 +11,7 @@ permissions:
 
 env:
   AWS_REGION: us-west-2
-  ROLE_TO_ASSUME: arn:aws:iam::123456789012:role/GitHubActions
+  ROLE_TO_ASSUME: arn:aws:iam::677252573665:role/GitHubActions-Boot
 
 jobs:
   inventory:

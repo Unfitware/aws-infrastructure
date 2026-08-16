@@ -131,19 +131,86 @@ gh api repos/OWNER/REPO/environments/production \
 
 OIDC allows GitHub Actions to authenticate to AWS without stored credentials. You must set this up once in your AWS account.
 
-### Step 1: Log In to AWS
+### Step 1: Configure Your AWS SSO Profile
+
+First, check if you have an AWS SSO profile configured. Run:
 
 ```bash
-# Replace with your AWS SSO profile name
-aws sso login --profile your-profile-name
+cat ~/.aws/config
+```
 
-# Verify your login
+Look for a section that starts with `[profile your-profile-name]`. You should see entries like:
+
+```
+[profile my-admin]
+sso_start_url = https://your-org.awsapps.com/start
+sso_region = us-east-1
+sso_account_id = 123456789012
+sso_role_name = Admin
+region = us-west-2
+```
+
+If your profile does not exist, create it. Open `~/.aws/config` in a text editor and add:
+
+```
+[profile your-profile-name]
+sso_start_url = https://YOUR_ORG.awsapps.com/start
+sso_region = us-east-1
+sso_account_id = YOUR_ACCOUNT_ID
+sso_role_name = Admin
+region = us-west-2
+```
+
+Replace:
+- `YOUR_ORG` with your organization name
+- `YOUR_ACCOUNT_ID` with your AWS account ID
+- `Admin` with your SSO role name (ask your AWS administrator if unsure)
+
+### Step 2: Log In to AWS
+
+Run this command:
+
+```bash
+aws sso login --profile your-profile-name
+```
+
+Replace `your-profile-name` with the profile name from your config file.
+
+A web browser will open automatically. Log in with your AWS SSO credentials. When login succeeds, your terminal will show:
+
+```
+Successfully logged in via SSO.
+```
+
+If the browser does not open, check the terminal output for a URL and open it manually.
+
+### Step 3: Verify Your Login
+
+Confirm that your login works:
+
+```bash
 aws sts get-caller-identity --profile your-profile-name
 ```
 
-You should see your AWS account ID and user name.
+You should see output like this:
 
-### Step 2: Run the Bootstrap Script
+```json
+{
+    "UserId": "XXXXX:username",
+    "Account": "123456789012",
+    "Arn": "arn:aws:iam::123456789012:user/username"
+}
+```
+
+If you see an error, try logging in again:
+
+```bash
+aws sso login --profile your-profile-name
+```
+
+Repeat the login process until you see the success output.
+
+### Step 4: Run the Bootstrap Script
 
 Go to the repository folder and run the bootstrap script:
 

@@ -47,7 +47,28 @@ gh variable set OIDC_ROLE_ARN --body "arn:aws:iam::123456789012:role/GitHubActio
 
 This step creates a trust relationship between GitHub Actions and your AWS account. You run this once on your computer.
 
-### Step 3a: Log In to AWS
+### Step 3a: Configure Your AWS SSO Profile
+
+First, check if you have an AWS SSO profile set up. Look in your AWS config file:
+
+```bash
+cat ~/.aws/config
+```
+
+You should see a section like this:
+
+```
+[profile your-profile-name]
+sso_start_url = https://your-org.awsapps.com/start
+sso_region = us-east-1
+sso_account_id = 123456789012
+sso_role_name = Admin
+region = us-west-2
+```
+
+If you do not have a profile, ask your AWS administrator for these values and add them to your AWS config file.
+
+### Step 3b: Log In to AWS
 
 Open your terminal and run:
 
@@ -57,15 +78,31 @@ aws sso login --profile your-profile-name
 
 Replace `your-profile-name` with your actual AWS SSO profile name.
 
+A browser window will open. Log in with your AWS SSO credentials. After login, your terminal will show:
+
+```
+Successfully logged in via SSO.
+```
+
 Confirm your login:
 
 ```bash
 aws sts get-caller-identity --profile your-profile-name
 ```
 
-You should see your AWS account ID and username.
+You should see output like this:
 
-### Step 3b: Run the Bootstrap Script
+```json
+{
+    "UserId": "XXXXX:username",
+    "Account": "123456789012",
+    "Arn": "arn:aws:iam::123456789012:user/username"
+}
+```
+
+The `Account` number is your AWS account ID.
+
+### Step 3c: Run the Bootstrap Script
 
 Go to the repository folder and run:
 

@@ -19,10 +19,10 @@ possible.
 ## Conventions
 
 - **Region:** `us-west-2`
-- **AWS account:** `677252573665`
-- **OIDC role:** `arn:aws:iam::677252573665:role/GitHubActions`
+- **AWS account:** `123456789012` (replace with your account ID)
+- **OIDC role:** `arn:aws:iam::123456789012:role/GitHubActions`
 - **Terraform:** `>= 1.12.0` (CI pins `1.12.0`); **AWS provider** `~> 5.50`
-- **Backend:** S3 (`j64364-tfstate`, key `dev-tfstate`) with native lockfile (`use_lockfile = true`, no DynamoDB)
+- **Backend:** S3 (`my-project-tfstate`, key `dev-tfstate`) with native lockfile (`use_lockfile = true`, no DynamoDB)
 - **`project_name`** default: `nbncorp` (so the state bucket is `nbncorp-core`, logs `nbncorp-core-logs`)
 
 ## One-time setup: bootstrap the OIDC trust
@@ -52,7 +52,7 @@ All workflows authenticate with OIDC:
 - uses: aws-actions/configure-aws-credentials@v6
   with:
     aws-region: us-west-2
-    role-to-assume: arn:aws:iam::677252573665:role/GitHubActions
+    role-to-assume: arn:aws:iam::123456789012:role/GitHubActions
     audience: sts.amazonaws.com
 ```
 
@@ -84,7 +84,7 @@ Apply is protected by **two** independent gates:
 
 On approval, the job downloads the saved plan and runs `terraform apply tfplan`,
 so only the reviewed plan is applied. A `concurrency` group prevents two applies
-racing the state. State lives in S3 (`s3://j64364-tfstate/dev-tfstate`) — there
+racing the state. State lives in S3 (`s3://my-project-tfstate/dev-tfstate`) — there
 is no local `terraform.tfstate`.
 
 ## Working with Terraform locally

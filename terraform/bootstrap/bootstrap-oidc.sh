@@ -85,7 +85,7 @@ else
   echo "Attaching least-privilege customer-managed policy: ${SCOPED_POLICY_NAME}"
   # Render the policy with the live account id (the source file uses a placeholder
   # account in its Deny-guardrail ARNs).
-  RENDERED_POLICY="$(sed "s/677252573665/${ACCOUNT_ID}/g" "$SCOPED_POLICY_FILE")"
+  RENDERED_POLICY="$(sed "s/123456789012/${ACCOUNT_ID}/g" "$SCOPED_POLICY_FILE")"
   if aws iam get-policy --policy-arn "$SCOPED_POLICY_ARN" >/dev/null 2>&1; then
     echo "Policy exists, adding a new default version..."
     aws iam create-policy-version --policy-arn "$SCOPED_POLICY_ARN" \

@@ -19,5 +19,5 @@ variable "unfitware_domain" {
 variable "aws_account_id" {
   description = "AWS Account ID"
   type        = string
-  default     = "123456789123"
+  default     = "123456789012"
 }

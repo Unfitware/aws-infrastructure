@@ -78,7 +78,7 @@
         "iam:DeleteRolePolicy",
         "iam:AttachRolePolicy"
       ],
-      "Resource": "arn:aws:iam::677252573665:role/GitHubActions"
+      "Resource": "arn:aws:iam::123456789012:role/GitHubActions"
     },
     {
       "Sid": "DenyOidcProviderTampering",
@@ -88,7 +88,7 @@
         "iam:UpdateOpenIDConnectProviderThumbprint",
         "iam:RemoveClientIDFromOpenIDConnectProvider"
       ],
-      "Resource": "arn:aws:iam::677252573665:oidc-provider/token.actions.githubusercontent.com"
+      "Resource": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
     }
   ]
 }

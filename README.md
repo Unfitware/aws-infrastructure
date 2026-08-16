@@ -5,6 +5,14 @@ Actions authenticates to AWS via OIDC (no long-lived access keys) and runs
 Terraform. The repo also holds the one-time bootstrap that makes that trust
 possible.
 
+## Quick Start
+
+For detailed setup instructions, see [docs/SETUP.md](docs/SETUP.md). It covers:
+- Setting up GitHub variables and environments
+- Running the AWS OIDC bootstrap
+- Verifying the setup
+- Troubleshooting common issues
+
 ## What's here
 
 | Path | Purpose |
